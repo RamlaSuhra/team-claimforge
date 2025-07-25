@@ -41,10 +41,10 @@ assessment based on an invention disclosure and a list of prior art patents you 
 {search_results}
 
 **Instructions:**
-1.  **Overall Assessment:** Start with a high-level summary of the patentability landscape.
-2.  **Analysis of Novelty:** For each piece of prior art found, explain how its abstract and title suggest it might challenge the novelty of the invention.
-3.  **Key Distinguishing Features:** Identify what aspects of the invention disclosure appear to be novel and not explicitly mentioned in the abstracts of the prior art. This is the potential area for a strong patent claim.
-4.  **Recommendation:** Conclude with a recommendation on whether to proceed and what specific technical details the patent claims should focus on.
+1.  **Overall Assessment:** Start with the features of claim 1 of the invention disclosure.  
+2.  **Analysis of Novelty:** For each piece of prior art found, explain how the prior art document's text might challenge the features of the invention described in claim 1.
+3.  **Key Distinguishing Features:** Identify which features of claim 1 of the invention disclosure appear to be novel and not explicitly mentioned in the prior art documents. 
+4.  **Recommendation:** Conclude with a recommendation on whether the prior art references appear to disclose the claimed features.
 
 Structure your response using clear headings and bullet points.
 """
