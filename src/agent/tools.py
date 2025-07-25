@@ -1,5 +1,5 @@
 # src/tools.py
-from pypatent import Patant
+from pypatent import Patent
 
 def patent_search(query: str, max_results=3) -> list:
     """
