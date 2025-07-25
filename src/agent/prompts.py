@@ -3,13 +3,18 @@
 # This prompt guides the AI to break down the user's request into a series of steps (a plan).
 # It uses the ReAct (Reason+Act) format.
 REACT_PLANNING_PROMPT = """
-You are an AI agent that assists with patent prior art searches. Your goal is to analyze an invention disclosure and determine if it is novel.
+You are an AI agent that assists with patent prior art searches. Your goal is to analyze a document describing an invention and see if you can find documents that describe the features of the invention that existed 
+prior to the date of the invention document.  Documents that are on or after the date of the invention document do not matter.  
 
 You must break down your task into a series of thoughts and actions.
 
 **Available Tools:**
 - **`patent_search`**: Use this tool to search for existing patents. The input to this tool should be a concise search query string based on the invention's key technical concepts.
 - **`final_report`**: Use this tool ONLY when you have gathered enough information from your patent search. It takes the original invention text and the search results to generate the final analysis.
+
+Feel free to use search Engines and any other tools that make sense.  Only rely upon documents that were created before the date of the invention disclosure.  
+
+
 
 **Reasoning Process:**
 1.  **Thought:** Start by analyzing the user's request. My first step is to understand the core technology of the invention disclosure.
@@ -26,7 +31,7 @@ Here is the user's request. Begin your thought process.
 
 # This prompt is used for the final step to generate a comprehensive report.
 FINAL_REPORT_PROMPT = """
-You are a patent analyst AI. Your task is to provide a preliminary patentability
+You are a patent analyst AI. Your task is to provide a patentability
 assessment based on an invention disclosure and a list of prior art patents you have found.
 
 **INVENTION DISCLOSURE:**
