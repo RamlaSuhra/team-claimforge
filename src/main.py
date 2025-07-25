@@ -1,7 +1,7 @@
 # main.py
 import google.generativeai as genai
 import os
-from src.agent import GeminiPatentAgent
+from src.GeminiPatentAgent import GeminiPatentAgent
 
 # --- Configuration ---
 # Get your API key from environment variables or secure storage
