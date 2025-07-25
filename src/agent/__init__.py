@@ -1,1 +1,1 @@
-from src import GeminiPatentAgent # Cleaner and more direct!
+from agent import GeminiPatentAgent # Cleaner and more direct!
