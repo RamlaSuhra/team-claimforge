@@ -1,60 +1,109 @@
 # src/tools.py
-from pypatent import Patent
+import json
+import logging
 
-def patent_search(query: str, max_results=3) -> list:
+# The library provides 'scraper_class'
+from google_patent_scraper import scraper_class
+
+# Tenacity is used for resilient network requests
+import tenacity
+from requests.exceptions import ConnectionError, ReadTimeout
+
+from . import prompts
+import requests
+from bs4 import BeautifulSoup
+
+import logging
+
+
+@tenacity.retry(
+    retry=tenacity.retry_if_exception_type((ConnectionError, ReadTimeout)),
+    wait=tenacity.wait_exponential(multiplier=1, min=2, max=30),
+    stop=tenacity.stop_after_attempt(3),
+    before_sleep=tenacity.before_sleep_log(logging.getLogger(__name__), logging.INFO)
+)
+def patent_search(query, max_results=5):
     """
-    Searches for patents using the pypatent library and returns structured results.
-    This is a tool that the agent can decide to call.
+    Search Google Patents by query and scrape details of found patents.
+
+    Args:
+        query (str): search query string
+        max_results (int): max number of patents to scrape
+
+    Returns:
+        list of dict: each dict contains scraped patent data
     """
-    print(f"--- TOOL: Executing Patent Search with query: '{query}' ---")
-    found_patents = []
+    base_url = 'https://patents.google.com/?q='
+    headers = {'User-Agent': 'Mozilla/5.0'}
+
     try:
-        patant = Patant(query)
-        patant.get_patents(max_page=1) # Fetch one page of results
-        
-        if not patant.patents:
-            return "No patents found for this query."
+        encoded_query = requests.utils.quote(query)
+        search_url = base_url + encoded_query
 
-        for patent in patant.patents[:max_results]:
-            patent_details = {
-                "title": patent.get('title'),
-                "patent_number": patent.get('patent_number'),
-                "abstract": patent.get('abstract'),
-                "url": patent.get('link')
-            }
-            found_patents.append(patent_details)
-        return found_patents
+        response = requests.get(search_url, headers=headers)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.text, 'lxml')
+
+        # Find patent numbers on the search results page
+        # NOTE: The CSS selector below might need adjustment if Google Patents changes HTML layout.
+        # Inspect the results page to find proper selector.
+        results = soup.select('search-result-item a[href*="/patent/"]')
+
+        # Extract patent numbers from hrefs
+        patent_numbers = []
+        for a_tag in results:
+            href = a_tag.get('href', '')
+            # href example: "/patent/US1234567A/en"
+            parts = href.split('/')
+            if len(parts) > 2:
+                patent_num = parts[2]
+                patent_numbers.append(patent_num)
+            if len(patent_numbers) >= max_results:
+                break
+
+        if not patent_numbers:
+            logging.warning("No patents found for query: %s", query)
+            return []
+
+        # Initialize scraper instance
+        scraper = scraper_class()
+
+        scraped_patents = []
+
+        for patent in patent_numbers:
+            err, soup, url = scraper.request_single_patent(patent)
+            if err == 'Success':
+                data = scraper.get_scraped_data(soup, patent, url)
+                scraped_patents.append(data)
+            else:
+                logging.warning("Failed to scrape patent %s: %s", patent, err)
+
+        return scraped_patents
+
     except Exception as e:
-        return f"An error occurred during patent search: {e}"
-
+        logging.error("An error occurred during patent search: %s", e)
+        return []
+    
 def final_report(model, invention_text: str, search_results: list) -> str:
     """
     This tool takes the original invention and the search results,
     then calls the generative AI model with a specific prompt to generate
     the final, structured analysis report.
-
-    Args:
-        model: The generative AI model instance (e.g., Gemini).
-        invention_text: The full text of the user's invention disclosure.
-        search_results: The list of prior art found by the patent_search tool.
-
-    Returns:
-        A string containing the formatted final report.
     """
     print("--- TOOL: Executing Final Report Generation ---")
     
-    # Format the search results into a readable string for the prompt
-    formatted_results = json.dumps(search_results, indent=2)
+    if isinstance(search_results, list):
+        formatted_results = json.dumps(search_results, indent=2)
+    else:
+        formatted_results = str(search_results)
 
-    # 1. Construct the final, detailed prompt
     final_prompt = prompts.FINAL_REPORT_PROMPT.format(
         invention_text=invention_text,
         search_results=formatted_results
     )
 
-    # 2. Call the generative AI model to generate the report
     print("   - Calling Gemini to write the final analysis...")
     report = model.generate_content(final_prompt).text
     
-    # 3. Return the generated report
     return report

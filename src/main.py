@@ -17,7 +17,7 @@ except KeyError:
 
 genai.configure(api_key=API_KEY)
 # Using a text-focused model suitable for this task
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-2.5-pro')
 
 def read_invention_disclosure(file_path: str):
     """Reads the invention disclosure from a file."""

@@ -1,3 +1,4 @@
-pypatent
 google-generativeai
 tenacity
+google-patent-scraper
+pypatent
