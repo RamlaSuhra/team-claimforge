@@ -1,0 +1,3 @@
+pypatent
+google-generativeai
+tenacity
