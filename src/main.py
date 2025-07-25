@@ -5,7 +5,7 @@ from agent.GeminiPatentAgent import GeminiPatentAgent
 
 # --- Configuration ---
 # Get your API key from environment variables or secure storage
-# os.environ['GOOGLE_API_KEY'] = "YOUR_API_KEY"
+#os.environ['GOOGLE_API_KEY'] = 
 try:
     API_KEY = os.environ['GOOGLE_API_KEY']
 except KeyError:
