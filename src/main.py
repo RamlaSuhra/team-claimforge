@@ -2,12 +2,15 @@
 import google.generativeai as genai
 import os
 from agent.GeminiPatentAgent import GeminiPatentAgent
+from dotenv import load_dotenv
 
 # --- Configuration ---
 # Get your API key from environment variables or secure storage
 #os.environ['GOOGLE_API_KEY'] = 
+load_dotenv()
+
 try:
-    API_KEY = "AIzaSyA0zu8mHGjgHd98M2ULyL0LZJsWx_ReOFY"##os.environ['GOOGLE_API_KEY']
+    API_KEY = os.environ['GOOGLE_API_KEY']
 except KeyError:
     print("ERROR: GOOGLE_API_KEY environment variable not set.")
     exit()

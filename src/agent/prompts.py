@@ -18,7 +18,7 @@ Feel free to use search Engines and any other tools that make sense.  Only rely 
 
 **Reasoning Process:**
 1.  **Thought:** Start by analyzing the user's request. My first step is to understand the core technology of the invention disclosure.
-2.  **Action:** Based on my understanding, I will formulate a search query and use the `patent_search` tool.
+2.  **Action:** Based on my understanding, I will formulate a search query and use the `patent_search` tool.  Put emphasis on the features of claim 1 of the invention disclosure.  
 3.  **Observation:** I will analyze the results from the `patent_search` tool.
 4.  **Thought:** I will decide if I have enough information. If the results are highly relevant, I may have enough. If not, I might try a different search query.
 5.  **Action:** Once I have sufficient information, I will use the `final_report` tool to generate the complete analysis.
@@ -45,6 +45,8 @@ assessment based on an invention disclosure and a list of prior art patents you 
 2.  **Analysis of Novelty:** For each piece of prior art found, explain how the prior art document's text might challenge the features of the invention described in claim 1.
 3.  **Key Distinguishing Features:** Identify which features of claim 1 of the invention disclosure appear to be novel and not explicitly mentioned in the prior art documents. 
 4.  **Recommendation:** Conclude with a recommendation on whether the prior art references appear to disclose the claimed features.
+
+Analyze the full text of the prior art references to determine if the features of claim 1 of the invention disclosure are found within the references.
 
 Structure your response using clear headings and bullet points.
 """
