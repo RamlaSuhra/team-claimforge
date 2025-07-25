@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../../../../misc-utils"
+		},
+		{
+			"path": "../../.."
+		},
+		{
+			"path": "../../../agent-patent/agent-patent-search"
+		}
+	],
+	"settings": {}
+}

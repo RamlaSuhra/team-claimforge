@@ -53,7 +53,7 @@ class GeminiPatentAgent:
 
     def _parse_action(self, llm_output: str):
         """Uses regex to parse the LLM's output for an action."""
-        match = re.search(r"Action:\s*(\w+)\((.*)\)", llm_output)
+        match = re.search(r"Action:\s*[`']?(\w+)[`']?\((.*?)\)", llm_output)
         if match:
             tool_name = match.group(1).strip()
             tool_input_str = match.group(2).strip()
@@ -87,8 +87,9 @@ class GeminiPatentAgent:
                 return "Agent failed due to persistent API rate limiting."
 
             self.memory.add_entry(f"LLM Response:\n{llm_response}")
+            print("#############################################################################")
             print(llm_response)
-
+            print("#############################################################################")
             tool_name, tool_input = self._parse_action(llm_response)
             
             if tool_name in self.available_tools:
