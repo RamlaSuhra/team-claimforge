@@ -1,42 +1,218 @@
-# Agentic AI App Hackathon Template
+ClaimForge: Gemini-Powered Prior Art Discovery for Patents
 
-Welcome! This repository is your starting point for the **Agentic AI App Hackathon**. It includes:
+Overview
 
-- A consistent folder structure  
-- An environment spec (`environment.yml` or `Dockerfile`)  
-- Documentation placeholders to explain your design and demo
+ClaimForge is an Agentic AI application designed for the Agentic AI App Hackathon. It leverages Google Gemini API to automate the discovery of prior art for patent claims, reducing the human effort required to identify documents that prove an invention was previously discovered. By analyzing patent documents, generating search queries, and validating results, ClaimForge streamlines the process of invalidating non-original patent claims.
 
-## 📋 Submission Checklist
+🚀 Getting Started
 
-- [ ] All code in `src/` runs without errors  
-- [ ] `ARCHITECTURE.md` contains a clear diagram sketch and explanation  
-- [ ] `EXPLANATION.md` covers planning, tool use, memory, and limitations  
-- [ ] `DEMO.md` links to a 3–5 min video with timestamped highlights  
-
-
-## 🚀 Getting Started
-
-1. **Clone / Fork** this template.  Very Important. Fork Name MUST be the same name as the teamn name
-
-
-## 📂 Folder Layout
-
-![Folder Layout Diagram](images/folder-githb.png)
+Prerequisites
 
 
 
-## 🏅 Judging Criteria
-
-- **Technical Excellence **  
-  This criterion evaluates the robustness, functionality, and overall quality of the technical implementation. Judges will assess the code's efficiency, the absence of critical bugs, and the successful execution of the project's core features.
-
-- **Solution Architecture & Documentation **  
-  This focuses on the clarity, maintainability, and thoughtful design of the project's architecture. This includes assessing the organization and readability of the codebase, as well as the comprehensiveness and conciseness of documentation (e.g., GitHub README, inline comments) that enables others to understand and potentially reproduce or extend the solution.
-
-- **Innovative Gemini Integration **  
-  This criterion specifically assesses how effectively and creatively the Google Gemini API has been incorporated into the solution. Judges will look for novel applications, efficient use of Gemini's capabilities, and the impact it has on the project's functionality or user experience. You are welcome to use additional Google products.
-
-- **Societal Impact & Novelty **  
-  This evaluates the project's potential to address a meaningful problem, contribute positively to society, or offer a genuinely innovative and unique solution. Judges will consider the originality of the idea, its potential real‑world applicability, and its ability to solve a challenge in a new or impactful way.
 
 
+Python 3.8+
+
+
+
+Google Gemini API key (obtain from Google AI Studio)
+
+
+
+Dependencies listed in environment.yml
+
+Setup Instructions
+
+
+
+
+
+Clone the Repository:
+
+git clone https://github.com/RamlaSuhra/team-claimforge.git
+cd team-claimforge
+
+
+
+Set Up Environment:
+
+
+
+
+
+Use the provided environment.yml to create a Conda environment:
+
+conda env create -f environment.yml
+conda activate claimforge
+
+
+
+Alternatively, use the Dockerfile for a containerized setup:
+
+docker build -t claimforge .
+docker run -it claimforge
+
+
+
+Configure API Key:
+
+
+
+
+
+Create a .env file in the root directory.
+
+
+
+Add your Gemini API key:
+
+GEMINI_API_KEY=your_api_key_here
+
+
+
+Ensure the .env file is listed in .gitignore to avoid committing the key.
+
+
+
+Run the Application:
+
+
+
+
+
+Execute the main script:
+
+python src/main.py
+
+📂 Folder Structure
+
+
+
+
+
+src/: Contains the core application code.
+
+
+
+
+
+planner.py: Parses patent documents and generates search queries based on keywords, dates, and terms.
+
+
+
+executor.py: Executes search queries using Gemini API and external search tools (e.g., Google).
+
+
+
+memory.py: Logs search results and maintains context for iterative processing.
+
+
+
+main.py: Orchestrates the agent workflow.
+
+
+
+ARCHITECTURE.md: Details the system design and workflow.
+
+
+
+EXPLANATION.md: Explains the agents' reasoning, memory usage, and limitations.
+
+
+
+DEMO.md: Links to a video demo with timestamps.
+
+🛠️ How It Works
+
+ClaimForge uses a multi-agent system powered by the Google Gemini API:
+
+
+
+
+
+Agent 1 (Planner): Receives a patent document, extracts key terms, dates, and concepts, and creates a search query.
+
+
+
+Agent 2 (Executor): Uses the query to search external sources (e.g., Google) via Gemini API and retrieves potential prior art documents.
+
+
+
+Agent 3 (Quality Control): Compares search results against the original patent, evaluates relevance, and determines if prior art is found.
+
+
+
+Iteration: Agents refine queries and results iteratively to improve accuracy.
+
+📋 Dependencies
+
+
+
+
+
+Python libraries: python-dotenv, requests, google-generativeai
+
+
+
+Full list in environment.yml
+
+🏅 Judging Criteria Alignment
+
+
+
+
+
+Technical Excellence: Robust code with error handling and efficient Gemini API calls.
+
+
+
+Solution Architecture & Documentation: Clear folder structure, comprehensive ARCHITECTURE.md, and detailed EXPLANATION.md.
+
+
+
+Innovative Gemini Integration: Creative use of Gemini API for query generation and result validation.
+
+
+
+Societal Impact & Novelty: Automates prior art discovery, reducing human effort and ensuring fair patent validation.
+
+📹 Demo
+
+See DEMO.md for a link to our 3–5 minute video showcasing the agent workflow, Gemini integration, and edge case handling.
+
+📝 Documentation
+
+
+
+
+
+ARCHITECTURE.md: System design with a diagram of agent interactions.
+
+
+
+EXPLANATION.md: Details on planning, memory, tool use, and limitations.
+
+
+
+DEMO.md: Video link with timestamps for setup, planning, tool calls, and output.
+
+📌 Notes
+
+
+
+
+
+Ensure your Gemini API key is securely stored and not committed to the repository.
+
+
+
+The repository is public for hackathon judging.
+
+
+
+For issues or questions, contact the team captain via the submission form.
+
+About
+
+This project is a submission for the Agentic AI App Hackathon, hosted at github.com/RamlaSuhra/team-claimforge. It aims to revolutionize prior art discovery using Gemini-powered agents.
