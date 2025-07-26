@@ -1,7 +1,7 @@
 # ClaimForge: Gemini-Powered Prior Art Discovery for Patents
 
 <p align="center">
-  <img src="images/claimforge.gif" alt="Demo animation" width="700"/>
+  <img src="images/claimforge.gif" alt="Demo animation" height="600"/>
 </p>
 
 ---
