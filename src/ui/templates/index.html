@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="ClaimForge - AI-Powered Patent Claim Analysis Tool"
+    />
+    <title>ClaimForge</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+      type="image/x-icon"
+    />
+  </head>
+  <body>
+    <!-- 🌗 Theme Toggle (top-right) -->
+    <div class="theme-toggle-container">
+      <button id="theme-toggle" aria-label="Toggle dark/light mode">
+        🌓 Toggle Theme
+      </button>
+    </div>
+
+    <!-- 🔝 Topbar with Welcome + Logout (top-left) -->
+    <div class="topbar">
+      <div class="welcome-user">👋 Welcome, {{ username }}</div>
+      <form class="logout-form" method="POST" action="{{ url_for('logout') }}">
+        <button type="submit">Logout</button>
+      </form>
+    </div>
+
+    <div class="container">
+      <h1>ClaimForge: Patent Agent</h1>
+
+      <form id="claim-form">
+        <label for="claim-input" class="sr-only">Patent Claim</label>
+        <textarea
+          id="claim-input"
+          rows="10"
+          placeholder="Paste your patent claim..."
+          aria-label="Paste your patent claim"
+        ></textarea>
+        <br />
+        <button type="submit">Analyze Claim</button>
+      </form>
+
+      <pre id="output">Your results will appear here...</pre>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  </body>
+</html>
