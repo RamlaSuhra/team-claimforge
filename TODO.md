@@ -9,6 +9,7 @@
 
  Replace fetch("/analyze") with deployed backend URL in script.js
 
+---
 
 - 🌐 Frontend (docs/)
  Confirm GitHub Pages loads index.html, style.css, script.js
@@ -19,6 +20,7 @@
 
  Add favicon, title, and meta tags
 
+---
 
 - 🔁 Integration
  Test frontend-to-backend request from GitHub Pages
@@ -27,6 +29,7 @@
 
  Handle server errors, timeouts, and invalid JSON responses
 
+---
 
 - 🧠 Agent (src/)
  Base agent logic in src/main.py
@@ -37,6 +40,7 @@
 
  Ensure .env is in .gitignore
 
+---
 
 - 📄 Docs & Submission
  README.md exists — update with setup/run instructions
@@ -49,6 +53,8 @@
 
  Submit final repo + video using the [submission form](https://forms.gle/nBhDe1UMpQYujPSAA)
 
+---
+
 🔧 Git & Cleanup
  Initial commit completed
 
@@ -58,6 +64,7 @@
 
  Test Dockerfile build + run locally
 
+---
 
 - ⭐ Stretch Goals
  Add confidence or summary UI
