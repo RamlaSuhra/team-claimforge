@@ -35,7 +35,8 @@ if __name__ == "__main__":
 
     if invention_details:
         # 2. Initialize and Run the Agent
-        patent_agent = GeminiPatentAgent(model=model)
+        SERP_API_KEY = os.environ['SERP_API_KEY']
+        patent_agent = GeminiPatentAgent(model=model, serpapi_api_key=SERP_API_KEY)
         final_response = patent_agent.run(user_input=invention_details)
         
         # 5. Print the Final Response

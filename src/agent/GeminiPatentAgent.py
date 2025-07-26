@@ -13,9 +13,10 @@ from google.api_core import exceptions as google_exceptions
 class GeminiPatentAgent:
     """The core agent for handling patent analysis."""
 
-    def __init__(self, model):
+    def __init__(self, model, serpapi_api_key=None):
         self.model = model
         self.memory = AgentMemory()
+        self.serpapi_api_key = serpapi_api_key
         self.available_tools = {
             "patent_search": tools.patent_search,
             "final_report": tools.final_report
@@ -37,7 +38,7 @@ class GeminiPatentAgent:
     def _parse_action(self, llm_output: str):
         """Parses the LLM's output for a <use_tool> XML-like tag."""
         tool_match = re.search(r"<use_tool tool_name=[\"'](.*?)[\"']>(.*?)</use_tool>", llm_output, re.DOTALL)
-        
+
         if not tool_match:
             return None, None
 
@@ -57,7 +58,7 @@ class GeminiPatentAgent:
         planning_prompt = prompts.REACT_PLANNING_PROMPT.format(user_input=user_input)
         self.memory.add_entry(f"User Input: {user_input}")
         observation_results = {}
-        
+
         for i in range(max_iterations):
             print(f"\n--- Iteration {i+1} ---")
 
@@ -78,14 +79,17 @@ class GeminiPatentAgent:
                 tool_function = self.available_tools[tool_name]
 
                 if tool_name == "patent_search":
-                    result = tool_function(tool_args)
+                    # tool_args is the query string from LLM
+                    # Call patent_search(query, max_results=3, api_key)
+                    result = tools.patent_search(tool_args, max_results=3, api_key=self.serpapi_api_key)
+                    #result = tool_function(tool_args, max_results=3, api_key=self.serpapi_api_key)
                     observation_results[tool_name] = result
 
                     if isinstance(result, str):
                         observation_entry = f"Observation: Tool `{tool_name}` returned error: {result}"
                     else:
                         observation_entry = f"Observation: Tool `{tool_name}` returned: {json.dumps(result, indent=2)}"
-                    
+
                     self.memory.add_entry(observation_entry)
                     print(observation_entry)
 

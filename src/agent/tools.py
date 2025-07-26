@@ -1,89 +1,83 @@
 # src/tools.py
 import json
 import logging
-
-# The library provides 'scraper_class'
-from google_patent_scraper import scraper_class
+import re
+import requests
+import time
 
 # Tenacity is used for resilient network requests
 import tenacity
-from requests.exceptions import ConnectionError, ReadTimeout
+from requests.exceptions import ConnectionError, ReadTimeout, ConnectTimeout, HTTPError
 
 from . import prompts
-import requests
-from bs4 import BeautifulSoup
 
-import logging
+def _clean_query(query: str) -> str:
+    """
+    Sanitizes the AI-generated query to a simple string of keywords,
+    which is what the PatentsView API works best with.
+    """
+    query = re.sub(r'[^\w\s]', ' ', query)
+    query = re.sub(r'\s+(AND|OR)\s+', ' ', query, flags=re.IGNORECASE)
+    query = re.sub(r'\s+', ' ', query).strip()
+    return query
 
+def _should_retry_http_error(exception):
+    """Return True if the HTTPError is a temporary server error worth retrying."""
+    return isinstance(exception, HTTPError) and exception.response.status_code in [502, 503, 504]
 
 @tenacity.retry(
-    retry=tenacity.retry_if_exception_type((ConnectionError, ReadTimeout)),
+    retry=(
+        tenacity.retry_if_exception_type((ConnectionError, ReadTimeout, ConnectTimeout)) |
+        tenacity.retry_if_exception(_should_retry_http_error)
+    ),
     wait=tenacity.wait_exponential(multiplier=1, min=2, max=30),
     stop=tenacity.stop_after_attempt(3),
     before_sleep=tenacity.before_sleep_log(logging.getLogger(__name__), logging.INFO)
 )
-def patent_search(query, max_results=5):
-    """
-    Search Google Patents by query and scrape details of found patents.
 
-    Args:
-        query (str): search query string
-        max_results (int): max number of patents to scrape
-
-    Returns:
-        list of dict: each dict contains scraped patent data
+def patent_search(query: str, max_results=3, api_key: str = None) -> list:
     """
-    base_url = 'https://patents.google.com/?q='
-    headers = {'User-Agent': 'Mozilla/5.0'}
+    Perform patent search using SerpAPI's Google Patents API.
+    Requires a valid SerpAPI API key.
+    """
+    print(f"--- TOOL: Executing SerpAPI Google Patents Search ---")
+    if not api_key:
+        return "Error: SerpAPI requires an API key."
+
+    params = {
+        "engine": "google_patents",
+        "q": query,
+        "api_key": api_key
+    }
 
     try:
-        encoded_query = requests.utils.quote(query)
-        search_url = base_url + encoded_query
-
-        response = requests.get(search_url, headers=headers)
+        response = requests.get("https://serpapi.com/search", params=params, timeout=20)
         response.raise_for_status()
+        data = response.json()
 
-        soup = BeautifulSoup(response.text, 'lxml')
+        results = data.get("patent_results", [])
+        if not results:
+            return "No patents found for this query on Google Patents (via SerpAPI)."
 
-        # Find patent numbers on the search results page
-        # NOTE: The CSS selector below might need adjustment if Google Patents changes HTML layout.
-        # Inspect the results page to find proper selector.
-        results = soup.select('search-result-item a[href*="/patent/"]')
+        print(f"   - Found {len(results)} results. Processing top {max_results}...")
 
-        # Extract patent numbers from hrefs
-        patent_numbers = []
-        for a_tag in results:
-            href = a_tag.get('href', '')
-            # href example: "/patent/US1234567A/en"
-            parts = href.split('/')
-            if len(parts) > 2:
-                patent_num = parts[2]
-                patent_numbers.append(patent_num)
-            if len(patent_numbers) >= max_results:
-                break
-
-        if not patent_numbers:
-            logging.warning("No patents found for query: %s", query)
-            return []
-
-        # Initialize scraper instance
-        scraper = scraper_class()
-
-        scraped_patents = []
-
-        for patent in patent_numbers:
-            err, soup, url = scraper.request_single_patent(patent)
-            if err == 'Success':
-                data = scraper.get_scraped_data(soup, patent, url)
-                scraped_patents.append(data)
-            else:
-                logging.warning("Failed to scrape patent %s: %s", patent, err)
-
-        return scraped_patents
+        found_patents = []
+        for result in results[:max_results]:
+            found_patents.append({
+                "title": result.get("title"),
+                "patent_number": result.get("patent_id"),
+                "publication_date": result.get("publication_date"),
+                "abstract": result.get("snippet"),
+                "url": result.get("link")
+            })
+        
+        return found_patents
 
     except Exception as e:
-        logging.error("An error occurred during patent search: %s", e)
-        return []
+        logging.error(f"Error during patent search via SerpAPI: {e}", exc_info=True)
+        return f"An error occurred during patent search: {e}"
+    
+
     
 def final_report(model, invention_text: str, search_results: list) -> str:
     """
