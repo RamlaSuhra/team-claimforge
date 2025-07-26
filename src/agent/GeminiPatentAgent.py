@@ -5,9 +5,10 @@ import time
 import logging
 import os
 
-#from tools import search, final_report # Tool import remains 'search'
-#from prompts import REACT_PLANNING_PROMPT, FINAL_REPORT_PROMPT
-#from memory import AgentMemory
+from . import tools
+from . import prompts
+from . import memory
+from .prompts import REACT_PLANNING_PROMPT
 
 
 import tenacity
@@ -16,18 +17,19 @@ from google.api_core import exceptions as google_exceptions
 class GeminiPatentAgent:
     """The core agent for handling patent analysis."""
 
-    def __init__(self, model):
+    def __init__(self, model, serpapi_api_key):
         """
         Initializes the agent.
         Args:
             model: An instance of a generative AI model (like Google's Gemini).
         """
         self.model = model
-        self.memory = AgentMemory()
+        self.memory = memory.AgentMemory()
         self.available_tools = {
-            "search": search, # Tool mapping remains 'search'
-            "final_report": final_report
+            "search": tools.patent_search, # Tool mapping remains 'search'
+            "final_report": tools.final_report
         }
+        self.serpapi_api_key = serpapi_api_key
         print("--- Gemini Patent Agent Initialized ---")
 
     @tenacity.retry(
@@ -98,7 +100,7 @@ class GeminiPatentAgent:
                 tool_function = self.available_tools[tool_name]
 
                 if tool_name == "search": # Tool name remains 'search'
-                    result = tool_function(tool_input)
+                    result = tool_function(tool_input, self.serpapi_api_key)
                     observation_results[tool_name] = result
                     observation_entry = f"Observation: Tool `{tool_name}` returned: {json.dumps(result, indent=2)}"
                     self.memory.add_entry(observation_entry)
