@@ -49,6 +49,11 @@ EOF
             echo "Placeholder test disclosure" > ./data/invention_disclosure.txt
           fi
 
+          if [[ ! -f ./data/invention_disclosure.txt ]]; then
+            echo "Creating dummy invention_disclosure.txt for CI..."
+            echo "Placeholder test disclosure" > ./data/invention_disclosure.txt
+          fi
+
       - name: Run smoke test
         run: bash TEST.sh
 
