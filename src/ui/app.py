@@ -18,7 +18,7 @@ import google.generativeai as genai
 from agent.GeminiPatentAgent import GeminiPatentAgent
 
 # Initialize Flask app
-app = Flask(__name__, template_folder="docs")
+app = Flask(__name__, template_folder="templates")
 CORS(app)
 
 # Retrieve required API keys
