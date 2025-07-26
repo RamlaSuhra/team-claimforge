@@ -5,7 +5,7 @@ exclude:
   - docs
   - examples
 
-# Badit configs
+# Bandit configs
 skips:
   - B101  # assert used
   - B110  # try/except/pass
