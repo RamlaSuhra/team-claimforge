@@ -1,5 +1,11 @@
 # ClaimForge: Gemini-Powered Prior Art Discovery for Patents
 
+<p align="center">
+  <img src="images/claimforge.gif" alt="Demo animation" width="700"/>
+</p>
+
+---
+
 ## Overview
 ClaimForge is an Agentic AI application designed for the Agentic AI App Hackathon. It leverages Google Gemini API to automate the discovery of prior art for patent claims, reducing the human effort required to identify documents that prove an invention was previously discovered. By analyzing patent documents, generating search queries, and validating results, ClaimForge streamlines the process of invalidating non-original patent claims.
 
