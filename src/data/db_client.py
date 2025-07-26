@@ -4,8 +4,8 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 # 1. Define the database engine
-# This will create a file named 'local_database.db' in the same directory
-DATABASE_URL = "sqlite:///local_database.db"
+# This will create a file named 'claim_forge.db' in the same directory
+DATABASE_URL = "sqlite:///claim_forge.db"
 engine = create_engine(DATABASE_URL)
 
 # 2. Declare a base for declarative models
