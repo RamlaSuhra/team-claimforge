@@ -1,4 +1,4 @@
-# main.py
+# main.py - backup. outputs to src/logs
 import os
 from pathlib import Path
 from datetime import datetime
