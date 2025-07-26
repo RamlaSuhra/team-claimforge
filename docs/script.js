@@ -1,3 +1,29 @@
+// Dark/Light mode toggle
+document.addEventListener("DOMContentLoaded", () => {
+  const toggle = document.getElementById("theme-toggle");
+  const html = document.documentElement;
+
+  const applyTheme = (theme) => {
+    html.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
+  };
+
+  // Set initial theme
+  const storedTheme = localStorage.getItem("theme");
+  if (storedTheme) {
+    applyTheme(storedTheme);
+  } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    applyTheme("dark");
+  }
+
+  toggle?.addEventListener("click", () => {
+    const current = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    applyTheme(current);
+  });
+});
+
+
+// Claim form handler
 document.getElementById("claim-form").onsubmit = async function (e) {
   e.preventDefault();
 
@@ -17,7 +43,7 @@ document.getElementById("claim-form").onsubmit = async function (e) {
   const BASE_URL =
     location.hostname === "localhost" || location.hostname === "127.0.0.1"
       ? "http://localhost:5000"
-      : "https://claimforge-api.onrender.com"; // Production backend
+      : "https://claimforge-api.onrender.com";
 
   try {
     const res = await fetch(`${BASE_URL}/analyze`, {

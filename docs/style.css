@@ -10,7 +10,6 @@
   --output-border: #2c7a7b;
 }
 
-/* Dark Theme Variables */
 [data-theme="dark"] {
   --bg-color: #121212;
   --text-color: #f5f5f5;
@@ -22,9 +21,10 @@
   --output-border: #00bfa5;
 }
 
+
 /* Base Styles */
 body {
-  font-family: "Segoe UI", Roboto, sans-serif;
+  font-family: "Inter", "Segoe UI", Roboto, sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
   margin: 0;
@@ -33,17 +33,31 @@ body {
   justify-content: center;
   align-items: start;
   min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Centered Card Container */
+
+/* Main Container */
 .container {
   background: var(--card-bg);
   margin-top: 4rem;
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-  width: 90%;
+  width: calc(100% - 4rem);
   max-width: 720px;
+  position: relative;
+  font-family: "Inter", "Segoe UI", Roboto, sans-serif;
+}
+
+/* Header Style */
+.container h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: var(--text-color);
+  text-align: center;
+  font-family: "Inter", "Segoe UI", Roboto, sans-serif;
 }
 
 /* Form Elements */
@@ -60,21 +74,48 @@ textarea {
   color: var(--text-color);
 }
 
-button {
-  padding: 0.75rem 1.5rem;
-  font-weight: bold;
-  font-size: 1rem;
-  background-color: var(--accent-color);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+/* Shared Button Base Style */
+/* Modern Cutting-Edge Theme */
+[data-theme="light"] {
+  --accent-color: #7c3aed;   /* Electric Violet */
+  --accent-hover: #6d28d9;
 }
 
-button:hover {
-  background-color: #24706c;
+[data-theme="dark"] {
+  --accent-color: #c084fc;   /* Soft Neon Purple */
+  --accent-hover: #a855f7;
 }
+
+button,
+#theme-toggle {
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  background-color: var(--accent-color);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+button:hover,
+#theme-toggle:hover {
+  background-color: var(--accent-hover);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+}
+
+
+/* Specific Accent Colors for Light/Dark Modes */
+[data-theme="light"] {
+  --accent-color: #00796b;
+}
+
+[data-theme="dark"] {
+  --accent-color: #26c6da;
+}
+
 
 /* Output Box */
 pre {
@@ -88,16 +129,28 @@ pre {
   overflow-x: auto;
 }
 
-/* Theme Toggle */
-#theme-toggle {
-  float: right;
-  margin-bottom: 1rem;
-  transform: scale(1.2);
-}
-label[for="theme-toggle"] {
-  font-size: 0.9rem;
-  color: var(--text-color);
-  cursor: pointer;
-  user-select: none;
+
+/* Theme Toggle Container */
+.theme-toggle-container {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
 }
 
+/* Toggle Button Styling */
+#theme-toggle {
+  font-family: inherit;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  background-color: var(--accent-color);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#theme-toggle:hover {
+  background-color: #24706c;
+}
