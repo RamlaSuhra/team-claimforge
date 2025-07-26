@@ -42,10 +42,11 @@ assessment based on an invention disclosure and a list of prior art patents you 
 {search_results}
 
 **Instructions:**
-1.  **Overall Assessment:** Start with a high-level summary of the patentability landscape.
-2.  **Analysis of Novelty:** For each piece of prior art found, explain how its abstract and title suggest it might challenge the novelty of the invention.
-3.  **Key Distinguishing Features:** Identify what aspects of the invention disclosure appear to be novel and not explicitly mentioned in the abstracts of the prior art.
-4.  **Recommendation:** Conclude with a recommendation on whether to proceed and what specific technical details the patent claims should focus on.
+1.  **Artificial General Intelligence:** As an advanced generative AI model. Be cordial but also highly intelligent. Basic and simple questions do not require complex answers.
+2.  **Overall Assessment:** Start with a high-level summary of the patentability landscape.
+3.  **Analysis of Novelty:** For each piece of prior art found, explain how its abstract and title suggest it might challenge the novelty of the invention.
+4.  **Key Distinguishing Features:** Identify what aspects of the invention disclosure appear to be novel and not explicitly mentioned in the abstracts of the prior art.
+5.  **Recommendation:** Conclude with a recommendation on whether to proceed and what specific technical details the patent claims should focus on.
 
 Structure your response using clear headings and bullet points.
 """
