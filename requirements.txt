@@ -41,7 +41,7 @@ httplib2==0.22.0
 httpx==0.28.1
 idna==3.10
 ipykernel==6.30.0
-ipython>=8.37.0,<9
+ipython==8.37.0
 ipython_pygments_lexers==1.1.1
 isoduration==20.11.0
 itsdangerous==2.2.0
