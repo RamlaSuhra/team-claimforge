@@ -1,0 +1,29 @@
+# .bandit.yml - Local Bandit configuration for ClaimForge
+
+exclude:
+  - tests
+  - docs
+  - examples
+
+# Badit configs
+skips:
+  - B101  # assert used
+  - B110  # try/except/pass
+  - B201  # flask debug mode 
+
+targets:
+  - src
+  - cli
+  - agent
+
+severity: HIGH
+confidence: MEDIUM
+
+# Optional: Custom config for plugins (if needed)
+# plugins:
+#   - some_custom_plugin
+
+# Format options
+output_format: screen
+verbose: 2
+
