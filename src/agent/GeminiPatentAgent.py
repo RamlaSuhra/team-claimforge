@@ -128,7 +128,6 @@ class GeminiPatentAgent:
                     return final_analysis
 
             else:
-                print("\n--- Agent did not choose a valid action. Ending loop. ---")
                 return "The agent could not complete the request because it failed to choose a valid action format."
 
         return "Agent reached maximum iterations without finishing."
