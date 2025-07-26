@@ -1,28 +1,103 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 2rem;
-  background-color: #f8f8f8;
-  color: #333;
+/* Root Variables for Light Theme */
+:root {
+  --bg-color: #f0f2f5;
+  --text-color: #222;
+  --card-bg: #ffffff;
+  --accent-color: #2c7a7b;
+  --input-bg: #f9f9f9;
+  --input-border: #ccc;
+  --output-bg: #f1f1f1;
+  --output-border: #2c7a7b;
 }
 
+/* Dark Theme Variables */
+[data-theme="dark"] {
+  --bg-color: #121212;
+  --text-color: #f5f5f5;
+  --card-bg: #1e1e1e;
+  --accent-color: #00bfa5;
+  --input-bg: #1a1a1a;
+  --input-border: #444;
+  --output-bg: #1c1c1c;
+  --output-border: #00bfa5;
+}
+
+/* Base Styles */
+body {
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  min-height: 100vh;
+}
+
+/* Centered Card Container */
+.container {
+  background: var(--card-bg);
+  margin-top: 4rem;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  width: 90%;
+  max-width: 720px;
+}
+
+/* Form Elements */
 textarea {
   width: 100%;
+  min-height: 150px;
   font-size: 1rem;
   padding: 1rem;
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  resize: vertical;
+  margin-bottom: 1rem;
+  color: var(--text-color);
 }
 
 button {
-  padding: 0.6rem 1.2rem;
+  padding: 0.75rem 1.5rem;
   font-weight: bold;
-  background-color: #4CAF50;
-  color: white;
+  font-size: 1rem;
+  background-color: var(--accent-color);
+  color: #fff;
   border: none;
-  margin-top: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-pre {
-  background: #eee;
-  padding: 1rem;
-  margin-top: 2rem;
-  white-space: pre-wrap;
+button:hover {
+  background-color: #24706c;
 }
+
+/* Output Box */
+pre {
+  background: var(--output-bg);
+  padding: 1rem;
+  margin-top: 1.5rem;
+  white-space: pre-wrap;
+  border-left: 4px solid var(--output-border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  overflow-x: auto;
+}
+
+/* Theme Toggle */
+#theme-toggle {
+  float: right;
+  margin-bottom: 1rem;
+  transform: scale(1.2);
+}
+label[for="theme-toggle"] {
+  font-size: 0.9rem;
+  color: var(--text-color);
+  cursor: pointer;
+  user-select: none;
+}
+
