@@ -1,0 +1,20 @@
+name: claimforge
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - fastapi
+      - uvicorn
+      - flask
+      - flask-cors
+      - google-generativeai
+      - python-dotenv
+      - rich
+      - aiofiles
+      - httpx
+      - beautifulsoup4
+      - tqdm
+      - gunicorn
+
