@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, send_from_directory
 from dotenv import load_dotenv
 import os
 from pathlib import Path
@@ -27,6 +27,11 @@ app = Flask(__name__, template_folder="docs")
 def index():
     return render_template("index.html")
 
+# Serve static assets directly from /docs/
+@app.route("/<path:filename>")
+def serve_static_from_docs(filename):
+    return send_from_directory("docs", filename)
+
 @app.route("/analyze", methods=["POST"])
 def analyze():
     data = request.get_json()
@@ -43,4 +48,3 @@ def analyze():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
