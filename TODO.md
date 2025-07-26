@@ -1,7 +1,9 @@
-# ✅ ClaimForge Hackathon To-Do 
+## ✅ ClaimForge Hackathon To-Do 
 
  A general checklist for team review and discussion
+
 ---
+
 - 🚀 Deployment
  Deploy Flask backend (Render, Fly.io, or Google Cloud Run)
 
