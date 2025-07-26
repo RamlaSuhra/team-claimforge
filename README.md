@@ -1,4 +1,5 @@
 ## ClaimForge: Gemini-Powered Prior Art Discovery for Patents
+[![ClaimForge CI](https://github.com/RamlaSuhra/team-claimforge/actions/workflows/ci.yml/badge.svg)](https://github.com/RamlaSuhra/team-claimforge/actions/workflows/ci.yml)
 
 <p align="center">
   <img src="images/claimforge.gif" alt="Demo animation" height="650"/>
