@@ -1,0 +1,28 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 2rem;
+  background-color: #f8f8f8;
+  color: #333;
+}
+
+textarea {
+  width: 100%;
+  font-size: 1rem;
+  padding: 1rem;
+}
+
+button {
+  padding: 0.6rem 1.2rem;
+  font-weight: bold;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  margin-top: 1rem;
+}
+
+pre {
+  background: #eee;
+  padding: 1rem;
+  margin-top: 2rem;
+  white-space: pre-wrap;
+}
