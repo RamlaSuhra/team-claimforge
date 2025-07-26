@@ -30,7 +30,7 @@ def read_invention_disclosure(file_path: str):
 
 if __name__ == "__main__":
     # 1. Receive User Input (by reading the file)
-    invention_file = "invention_disclosure.txt"
+    invention_file = "./data/invention_disclosure.txt"
     invention_details = read_invention_disclosure(invention_file)
 
     if invention_details:
