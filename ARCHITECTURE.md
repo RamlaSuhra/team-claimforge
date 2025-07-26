@@ -1,6 +1,5 @@
 ## 2. `ARCHITECTURE.md`
 
-```markdown
 # Architecture Overview
 
 ![System Architecture](architecture.png)
