@@ -12,7 +12,7 @@ ClaimForge is an Agentic AI application designed for the Agentic AI App Hackatho
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Python 3.8+
+- Python 3.12+
 - Google Gemini API key (obtain from [Google AI Studio](https://aistudio.google.com/))
 - Dependencies listed in `environment.yml`
 
