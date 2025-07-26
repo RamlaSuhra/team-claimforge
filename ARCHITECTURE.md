@@ -3,105 +3,98 @@
 ```markdown
 # Architecture Overview
 
-This document outlines the architecture of the GeminiPatentAgent - an AI-powered patent prior art search and analysis system.
+![System Architecture](architecture.png)
 
-## High-Level Architecture
+## System Diagram (ASCII)
 
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   User Input    │───▶│  GeminiPatentAgent │───▶│  Final Report   │
-│ (Invention File)│    │   (Core Agent)    │    │ (Analysis)      │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-                              │
-                              ▼
-                       ┌──────────────────┐
-                       │   Tools Layer    │
-                       │  - patent_search │
-                       │  - final_report  │
-                       └──────────────────┘
-                              │
-                              ▼
-                       ┌──────────────────┐
-                       │  External APIs   │
-                       │ - Google Gemini  │
-                       │ - SerpAPI        │
-                       └──────────────────┘
+┌────────────────────────────┐
+│        User Input          │
+│ (invention_disclosure.txt) │
+└─────────────┬──────────────┘
+              │
+              ▼
+┌──────────────────────────────────────────────┐
+│           GeminiPatentAgent (Core)           │
+│ ┌──────────────┬──────────────┬────────────┐ │
+│ │   Planner    │   Executor   │   Memory   │ │
+│ │ (ReAct loop) │ (Tool calls) │ (History)  │ │
+│ └──────────────┴──────────────┴────────────┘ │
+│        │                │                   │
+│        ▼                ▼                   │
+│   ┌────────────┐   ┌────────────┐           │
+│   │  Prompts   │   │  Tools     │           │
+│   │ (planning  │   │ (patent_   │           │
+│   │  & report) │   │  search,   │           │
+│   └────────────┘   │  final_    │           │
+│                    │  report)   │           │
+│                    └────┬───────┘           │
+│                         ▼                   │
+│         ┌────────────────────────────┐      │
+│         │   External Integrations    │      │
+│         │ - Google Gemini LLM        │      │
+│         │ - SerpAPI (Google Patents) │      │
+│         └────────────────────────────┘      │
+│                                            │
+│   ┌─────────────────────────────────────┐   │
+│   │ Logging & Observability             │   │
+│   │ - Console logs (steps, errors)      │   │
+│   │ - Memory chain (AgentMemory)        │   │
+│   └─────────────────────────────────────┘   │
+└──────────────────────────────────────────────┘
+              │
+              ▼
+┌────────────────────────────┐
+│   Final Report Output      │
+└────────────────────────────┘
 ```
+
+---
 
 ## Components
 
-### 1. **User Interface**  
-- **CLI Interface**: `main.py` - Command-line entry point
-- **File Input**: Reads invention disclosure from `invention_disclosure.txt`
-- **Output**: Console-based final patentability analysis
+### 1. **Planner**
+- **Location:** `GeminiPatentAgent.py` (ReAct loop)
+- **Role:** Generates reasoning and plans next action using LLM and structured prompts.
 
-### 2. **Agent Core** (`GeminiPatentAgent.py`)
+### 2. **Executor**
+- **Location:** `GeminiPatentAgent.py`
+- **Role:** Parses LLM output, calls tools (`patent_search`, `final_report`), manages tool results.
 
-#### **Planner**: 
-- Uses ReAct (Reasoning + Acting) pattern
-- Structured prompts from `prompts.py` guide the reasoning process
-- Step-by-step thought process before each action
+### 3. **Memory**
+- **Location:** `memory.py` (`AgentMemory` class)
+- **Role:** Stores full conversation history (user input, LLM thoughts, tool results) for context in each iteration.
 
-#### **Executor**: 
-- **LLM Integration**: Google Gemini 2.5 Pro via `_call_gemini()`
-- **Tool Calling Logic**: XML-style `<use_tool>` parsing via `_parse_action()`
-- **Retry Logic**: Tenacity decorators for API resilience
-- **Rate Limiting**: Exponential backoff for Google API limits
+### 4. **Tool Integrations**
+- **Gemini LLM:** For reasoning, planning, and report generation.
+- **SerpAPI (Google Patents):** For patent search via `tools.py`.
+- **Tool logic:** Encapsulated in `tools.py` and called by the executor.
 
-#### **Memory**: 
-- **AgentMemory Class**: Simple in-memory conversation history
-- **Context Preservation**: Maintains full conversation chain
-- **History Format**: Sequential entries with timestamps
+### 5. **Prompts**
+- **Location:** `prompts.py`
+- **Role:** Provides structured instructions for LLM (planning, tool call format, final report).
 
-### 3. **Tools / APIs** (`tools.py`)
+### 6. **Logging & Observability**
+- **Console Output:** Step-by-step logs, errors, and tool results.
+- **Memory Chain:** Full trace of agent’s reasoning and actions via `AgentMemory`.
+- **Error Handling:** Graceful handling of API failures and rate limits.
 
-#### **patent_search**:
-- **API**: SerpAPI Google Patents integration
-- **Functionality**: Searches existing patents using AI-generated queries
-- **Query Cleaning**: Sanitizes AI queries for optimal API performance
-- **Resilience**: Tenacity retry logic for network failures
-- **Output**: Structured patent data (title, number, date, abstract, URL)
-
-#### **final_report**:
-- **Functionality**: Generates comprehensive patentability analysis
-- **Input**: Original invention + search results
-- **Output**: Structured analysis with novelty assessment and recommendations
-
-### 4. **Observability** (`memory.py`, logging)
-
-#### **Logging**:
-- **Console Output**: Step-by-step execution visibility
-- **Error Handling**: Graceful degradation for API failures
-- **Debug Information**: Tool execution status and results
-
-#### **Memory Tracking**:
-- **Conversation History**: Full agent reasoning chain
-- **Tool Results**: Structured observation storage
-- **Context Preservation**: Maintains state across iterations
+---
 
 ## Data Flow
 
-1. **Input Processing**: Invention disclosure read from file
-2. **Agent Initialization**: Gemini model + SerpAPI key setup
-3. **ReAct Loop**: 
-   - Thought process generation
-   - Tool selection and execution
-   - Result observation and memory update
-4. **Final Analysis**: Comprehensive patentability report generation
+1. **User Input:** Read from file.
+2. **Agent Initialization:** LLM and API keys set up.
+3. **ReAct Loop:** Planner generates thought, executor parses and calls tools, memory updated.
+4. **Tool Execution:** Results from SerpAPI and LLM.
+5. **Final Report:** Generated and output to user.
 
-## Key Features
+---
 
-- **Resilient API Calls**: Exponential backoff for rate limits
-- **Structured Tool Calling**: XML-style parsing for reliability
-- **Context-Aware Memory**: Full conversation history preservation
-- **Flexible Query Generation**: AI-powered search query optimization
-- **Comprehensive Analysis**: Multi-step patentability assessment
+## Suggestions for Improvement
 
-## Dependencies
-
-- **Google Generative AI**: Core LLM functionality
-- **SerpAPI**: Patent search capabilities
-- **Tenacity**: Retry logic for resilience
-- **Requests**: HTTP client for API calls
-- **Python-dotenv**: Environment variable management
+- If you add a database, show it as a separate “Storage” block.
+- If you add a web UI, show it as a separate “UI” block feeding into the agent.
+- If you add more tools, expand the “Tools” section in the diagram.
+- For advanced observability, consider logging to files or external monitoring.
 
