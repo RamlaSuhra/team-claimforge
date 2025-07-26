@@ -1,5 +1,13 @@
 # src/prompts.py
 
+# =================================================================
+# REACT PLANNING PROMPT - Core prompt for the ReAct (Reasoning + Acting) loop
+# =================================================================
+# This prompt guides the LLM through the ReAct pattern:
+# 1. Thought: Reasoning about the patent search strategy
+# 2. Action: Selecting and calling appropriate tools using XML format
+# 3. Structured output format for reliable parsing by _parse_action()
+# =================================================================
 REACT_PLANNING_PROMPT = """
 Your name is Claimforge, you are an AI agent that assists with patent prior art searches. Your goal is to analyze an invention disclosure and determine if it is novel.
 
@@ -30,7 +38,14 @@ Begin your process now.
 {user_input}
 """
 
-# The FINAL_REPORT_PROMPT remains the same as before.
+# =================================================================
+# FINAL REPORT PROMPT - Generates comprehensive patentability analysis
+# =================================================================
+# This prompt is used by the final_report tool to generate a structured
+# patentability assessment based on the invention disclosure and search results.
+# It guides the LLM to provide a comprehensive analysis with specific sections
+# for novelty assessment and recommendations.
+# =================================================================
 FINAL_REPORT_PROMPT = """
 You are a patent analyst AI. Your task is to provide a preliminary patentability
 assessment based on an invention disclosure and a list of prior art patents you have found.
