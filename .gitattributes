@@ -1,3 +1,5 @@
 # GH configs - Gemini tests
 *.html linguist-detectable=false
+*.js linguist-detectable=false
+*.css linguist-detectable=false
 *.ipynb linguist-documentation
