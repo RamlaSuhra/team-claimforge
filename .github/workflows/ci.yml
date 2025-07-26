@@ -38,10 +38,10 @@ jobs:
           if [[ ! -f .env ]]; then
             echo "Creating dummy .env for CI..."
             cat <<EOF > .env
-GEMINI_API_KEY=ci_dummy_gemini
-GOOGLE_API_KEY=ci_dummy_google
-SERP_API_KEY=ci_dummy_serp
-EOF
+            GEMINI_API_KEY=ci_dummy_gemini
+            GOOGLE_API_KEY=ci_dummy_google
+            SERP_API_KEY=ci_dummy_serp
+            EOF
           fi
 
           if [[ ! -f ./data/invention_disclosure.txt ]]; then
