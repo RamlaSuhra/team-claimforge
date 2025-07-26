@@ -1,11 +1,13 @@
 # database.py
-
+import os
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 # 1. Define the database engine
 # This will create a file named 'claim_forge.db' in the same directory
-DATABASE_URL = "sqlite:///claim_forge.db"
+
+db_path = os.path.join(os.path.dirname(__file__), 'claim_forge.db')
+DATABASE_URL = f"sqlite:///{db_path}"
 engine = create_engine(DATABASE_URL)
 
 # 2. Declare a base for declarative models
