@@ -1,9 +1,10 @@
 import os
 import sys
 from flask import Flask, render_template, request, redirect, url_for, session
-
+from flask_cors import CORS
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+from dotenv import load_dotenv
+load_dotenv()
 from data.db_client import (
     SessionLocal,
     create_user,
@@ -13,7 +14,25 @@ from data.db_client import (
     delete_user,
 )
 
-app = Flask(__name__)
+import google.generativeai as genai
+from agent.GeminiPatentAgent import GeminiPatentAgent
+
+# Initialize Flask app
+app = Flask(__name__, template_folder="docs")
+CORS(app)
+
+# Retrieve required API keys
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+SERP_API_KEY = os.getenv("SERP_API_KEY")
+
+if not GOOGLE_API_KEY or not SERP_API_KEY:
+    raise EnvironmentError("Missing GOOGLE_API_KEY or SERP_API_KEY")
+
+# Configure Gemini
+genai.configure(api_key=GOOGLE_API_KEY)
+model = genai.GenerativeModel("gemini-2.5-pro")
+agent = GeminiPatentAgent(model=model, serpapi_api_key=SERP_API_KEY)
+
 app.secret_key = 'your_super_secret_key_here'  # 🔐 Change this in production
 
 # --- Flask Routes ---
@@ -24,6 +43,28 @@ def root():
         return redirect(url_for('dashboard'))
     return redirect(url_for('login'))
 
+@app.route("/analyze", methods=["POST", "OPTIONS"])
+def analyze():
+    if request.method == "OPTIONS":
+        response = jsonify({"status": "preflight"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Headers", "*")
+        response.headers.add("Access-Control-Allow-Methods", "*")
+        return response
+
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No JSON data received"}), 400
+
+    claim = data.get("claim", "").strip()
+    if not claim:
+        return jsonify({"error": "Missing claim text"}), 400
+
+    try:
+        result = agent.run(user_input=claim)
+        return jsonify({"response": result})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
