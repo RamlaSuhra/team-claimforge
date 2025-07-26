@@ -12,7 +12,7 @@ load_dotenv()
 try:
     API_KEY = os.environ['GOOGLE_API_KEY']
 except KeyError:
-    print("ERROR: GOOGLE_API_KEY environment variable not set.")
+    print("[WARNING]: GOOGLE_API_KEY environment variable not set.")
     exit()
 
 genai.configure(api_key=API_KEY)
