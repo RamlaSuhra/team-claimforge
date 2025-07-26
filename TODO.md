@@ -1,6 +1,6 @@
 # ✅ ClaimForge Hackathon To-Do (A general checklist to review)
 
-🚀 Deployment
+- 🚀 Deployment
  Deploy Flask backend (Render, Fly.io, or Google Cloud Run)
 
  Add /ping health check endpoint
@@ -10,7 +10,7 @@
  Replace fetch("/analyze") with deployed backend URL in script.js
 
 
-🌐 Frontend (docs/)
+- 🌐 Frontend (docs/)
  Confirm GitHub Pages loads index.html, style.css, script.js
 
  Add input validation & loading/error handling
@@ -20,7 +20,7 @@
  Add favicon, title, and meta tags
 
 
-🔁 Integration
+- 🔁 Integration
  Test frontend-to-backend request from GitHub Pages
 
  Use dynamic API base URL for dev vs prod in JS
@@ -28,7 +28,7 @@
  Handle server errors, timeouts, and invalid JSON responses
 
 
-🧠 Agent (src/)
+- 🧠 Agent (src/)
  Base agent logic in src/main.py
 
  Uses Gemini API via google.generativeai
@@ -38,7 +38,7 @@
  Ensure .env is in .gitignore
 
 
-📄 Docs & Submission
+- 📄 Docs & Submission
  README.md exists — update with setup/run instructions
 
  ARCHITECTURE.md exists — include planner/executor/memory layout
@@ -59,7 +59,7 @@
  Test Dockerfile build + run locally
 
 
-⭐ Stretch Goals
+- ⭐ Stretch Goals
  Add confidence or summary UI
 
  Visualize planning steps
