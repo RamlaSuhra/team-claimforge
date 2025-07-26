@@ -61,6 +61,8 @@ ClaimForge is an AI-powered web application that enables users to analyze patent
   - `ui/`: Flask web app (app.py, HTML templates, static assets)
   - `data/`: (Optional) Database and data access
   - `main.py`: CLI entry point for agent (optional)
+  - `notebook` : Folder to hold the notebook
+  - `logs`: Folder to store logs
 - `ARCHITECTURE.md`: Details the system design and workflow.
 - `EXPLANATION.md`: Explains the agent’s reasoning, memory usage, and limitations.
 - `DEMO.md`: Links to a video demo with timestamps.
