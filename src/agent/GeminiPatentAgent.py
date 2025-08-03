@@ -1,123 +1,78 @@
-# src/agent.py
-import json
-import re
-import time
-import logging
-import os
+"""
+This module provides a LangGraph-based agent implementation.
+"""
 
-from . import tools
-from . import prompts
-from . import memory
-from .prompts import REACT_PLANNING_PROMPT
-
-
-import tenacity
-from google.api_core import exceptions as google_exceptions
+from .graph.patent_graph import build_patent_graph
+from .memory.memory import AgentMemory
+from .prompts.react_prompts import REACT_PLANNING_PROMPT
 
 class GeminiPatentAgent:
-    """The core agent for handling patent analysis."""
+    """
+    Compatibility wrapper for the GeminiPatentAgent using the LangGraph workflow.
+    """
 
-    def __init__(self, model, serpapi_api_key):
+    def __init__(self, model):
         """
-        Initializes the agent.
+        Initializes the agent with the given LLM model.
         Args:
-            model: An instance of a generative AI model (like Google's Gemini).
+            model: An LLM model instance with a generate_content(prompt) method.
         """
         self.model = model
-        self.memory = memory.AgentMemory()
-        self.available_tools = {
-            "search": tools.patent_search, # Tool mapping remains 'search'
-            "final_report": tools.final_report
-        }
-        self.serpapi_api_key = serpapi_api_key
-        print("--- Gemini Patent Agent Initialized ---")
-
-    @tenacity.retry(
-        retry=tenacity.retry_if_exception_type(google_exceptions.ResourceExhausted),
-        wait=tenacity.wait_exponential(multiplier=1, min=2, max=60),
-        stop=tenacity.stop_after_attempt(10),
-        before_sleep=tenacity.before_sleep_log(logging.getLogger(__name__), logging.INFO)
-    )
-    def _call_gemini(self, prompt):
-        """
-        A wrapper for calling the generative model.
-        This method is now decorated with retry logic.
-        """
-        print("    - Calling Gemini API...")
-        response = self.model.generate_content(prompt)
-        print("    - ...API call successful.")
-        return response.text
-
-
-    def _parse_action(self, llm_output: str):
-        """Uses regex to parse the LLM's output for an action."""
-        match = re.search(r"Action:\s*(\w+)\s*\((.*)\)\s*$", llm_output, re.DOTALL | re.MULTILINE)
-        if match:
-            tool_name = match.group(1).strip()
-            tool_input_str = match.group(2).strip()
-            tool_input = tool_input_str.strip("'\"") if tool_input_str else None
-            print(" tool_name from _parse_action is ", tool_name)
-            return tool_name, tool_input
-        else:
-            print(" This is not a match in _parse_action and tool name is not found from LLM response!")
-            print(f" LLM Output that failed to parse:\n{llm_output}")
-            return None, None
 
     def run(self, user_input: str, max_iterations=5):
         """
-        Runs the agent's core ReAct (Reason + Act) loop.
+        Runs the LangGraph-based patent agent workflow.
+        Args:
+            user_input (str): The invention disclosure or user query.
+            max_iterations (int): Maximum number of workflow steps.
+        Returns:
+            str: The final report or a message if not completed.
         """
-        print(f"\n--- Running Agent with Input ---")
+        memory = AgentMemory()
+        memory.add_entry(f"User Input: {user_input}")
 
-        planning_prompt = REACT_PLANNING_PROMPT.format(user_input=user_input)
-        self.memory.add_entry(f"User Input: {user_input}")
-        observation_results = {}
+        state = {
+            "user_input": user_input,
+            "model": self.model,
+            "prompt": REACT_PLANNING_PROMPT.format(user_input=user_input),
+            "memory": memory,
+            "tool_input": user_input  # For demo, pass user_input as tool_input
+        }
 
-        for i in range(max_iterations):
-            print(f"\n--- Iteration {i+1} ---")
+        graph = build_patent_graph()
+        compiled_graph = graph.compile()
+        print("--- Running LangGraph Workflow ---")
+        print(f"   - Initial State: {state}")
+        result_state = compiled_graph.invoke(state) 
+        final_report = result_state.get("final_report")
+        if final_report:
+            return final_report
+        else:
+            return "Agent did not produce a final report."
 
-            current_prompt = f"{planning_prompt}\n{self.memory.get_history()}"
+    def main(): 
+        # Read the invention disclosure from a file
+        file_path = 'invention_disclosure.txt'  # Adjust this path as needed
+        invention_text = read_invention_disclosure(file_path)
+        
+        if not invention_text:
+            return
 
-            try:
-                llm_response = self._call_gemini(current_prompt)
-            except google_exceptions.ResourceExhausted as e:
-                print("--- AGENT ERROR: API rate limit exceeded after multiple retries. Aborting. ---")
-                print(f"--- Last error: {e} ---")
-                return "Agent failed due to persistent API rate limiting."
+        # Initialize the Gemini Patent Agent with the model
+        agent = GeminiPatentAgent(model)
 
-            self.memory.add_entry(f"LLM Response:\n{llm_response}")
-            print(llm_response)
+        # Run the agent with the invention disclosure
+        print("Running Gemini Patent Agent...")
+        final_report = agent.run(invention_text)
 
-            tool_name, tool_input = self._parse_action(llm_response)
-
-            if tool_name in self.available_tools:
-                if tool_name == "final_report" and not observation_results.get("search"): # Condition remains 'search'
-                    no_results_entry = "Observation: The `final_report` tool cannot be called yet because no prior art has been found. You must use the `search` tool first, or try a different search query."
-                    self.memory.add_entry(no_results_entry)
-                    print(f"\n[GUARDRAIL ACTIVATED] {no_results_entry}")
-                    continue
-
-                tool_function = self.available_tools[tool_name]
-
-                if tool_name == "search": # Tool name remains 'search'
-                    result = tool_function(tool_input, self.serpapi_api_key)
-                    observation_results[tool_name] = result
-                    observation_entry = f"Observation: Tool `{tool_name}` returned: {json.dumps(result, indent=2)}"
-                    self.memory.add_entry(observation_entry)
-                    print(observation_entry)
-
-                elif tool_name == "final_report":
-                    final_analysis = tool_function(
-                        model=self.model,
-                        invention_text=user_input,
-                        search_results=observation_results.get("search", []) # Key remains 'search'
-                    )
-                    return final_analysis
-            else:
-              
-                return "The agent could not complete the request because it failed to choose a valid action."
-
-        return "Agent reached maximum iterations without finishing."
-
-
-# !pip install google.generativeai
+        # Output the final report
+        print("\n=== Final Report ===")
+        print(final_report)
+    if __name__ == "__main__":
+        main()
+    # --- End of main.py ---
+    # This script initializes the Gemini Patent Agent and runs it with an invention disclosure.
+    # It reads the disclosure from a file, configures the model, and prints the final report.
+    # Make sure to set the GOOGLE_API_KEY environment variable before running this script.
+    # The script is designed to be run as a standalone application.
+    # It uses the dotenv package to load environment variables from a .env file.    

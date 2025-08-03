@@ -1,23 +1,10 @@
 # main.py
-import google.generativeai as genai
 import os
-from agent.GeminiPatentAgent import GeminiPatentAgent
 from dotenv import load_dotenv
 
-# --- Configuration ---
-# Get your API key from environment variables or secure storage
-#os.environ['GOOGLE_API_KEY'] = 
-load_dotenv()
+import google.generativeai as genai
+from .agent.GeminiPatentAgent import GeminiPatentAgent
 
-try:
-    API_KEY = os.environ['GOOGLE_API_KEY']
-except KeyError:
-    print("[WARNING]: GOOGLE_API_KEY environment variable not set.")
-    exit()
-
-genai.configure(api_key=API_KEY)
-# Using a text-focused model suitable for this task
-model = genai.GenerativeModel('gemini-2.5-pro')
 
 def read_invention_disclosure(file_path: str):
     """Reads the invention disclosure from a file."""
@@ -28,14 +15,35 @@ def read_invention_disclosure(file_path: str):
         print(f"Error: Invention disclosure file not found at '{file_path}'")
         return None
 
-if __name__ == "__main__":
-    # 1. Receive User Input (by reading the file)
-    invention_file = "./data/invention_disclosure.txt"
-    invention_details = read_invention_disclosure(invention_file)
+def main():
+    load_dotenv()
+    api_key = os.environ.get('GOOGLE_API_KEY')
 
-    if invention_details:
-        # 2. Initialize and Run the Agent
-        SERP_API_KEY = os.environ['SERP_API_KEY']
-        patent_agent = GeminiPatentAgent(model=model, serpapi_api_key=SERP_API_KEY)
-        final_response = patent_agent.run(user_input=invention_details)
-      
+    # For real model
+    model = None
+    if api_key:
+        import google.generativeai as genai
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-2.5-pro')
+    else:
+        print("[WARNING]: GOOGLE_API_KEY not set. Using DummyModel for testing.")
+        class DummyModel:
+            def generate_content(self, prompt):
+                class Response:
+                    text = "Action: search('test prior art')"
+                return Response()
+        model = DummyModel()
+
+    file_path = './src/data/invention_disclosure.txt'
+    invention_text = read_invention_disclosure(file_path)
+    if not invention_text:
+        return
+
+    agent = GeminiPatentAgent(model)
+    print("Running Gemini Patent Agent...")
+    final_report = agent.run(invention_text)
+    print("\n=== Final Report ===")
+    print(final_report)
+
+if __name__ == "__main__":
+    main()
