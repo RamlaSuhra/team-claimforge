@@ -102,6 +102,8 @@ pure_eval==0.2.3
 py-serializable==2.1.0
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
+pycache-wipe==1.0.0
+pyclean==3.1.0
 pycparser==2.22
 pydantic==2.11.7
 pydantic_core==2.33.2
